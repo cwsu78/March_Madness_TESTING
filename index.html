@@ -616,9 +616,37 @@
 
             console.log('Bracket Data:', bracketData);
 
-            // Here you would send to Google Sheets
-            // For now, show success
-            successMsg.style.display = 'block';
+//send to google sheets
+            
+    fetch('https://script.google.com/macros/s/AKfycbynPPON7qulbVg1Wic5Dvcf3DxiUiq-TcNE0bSKMgjuI39PxsIWcsW6Z-r7DxKybJDJ/exec', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(bracketData)
+})
+.then(response => response.json())
+.then(data => {
+    if (data.status !== 'success') {
+        throw new Error(data.message || 'Submission failed');
+    }
+
+    successMsg.style.display = 'block';
+    successMsg.scrollIntoView({ behavior: 'smooth' });
+
+    document.getElementById('name').disabled = true;
+    document.getElementById('email').disabled = true;
+    document.querySelectorAll('.team').forEach(t => {
+        t.style.pointerEvents = 'none';
+    });
+    document.getElementById('submit-btn').disabled = true;
+})
+.catch(error => {
+    console.error('Error:', error);
+    errorMsg.textContent = 'Submission failed. Please try again.';
+    errorMsg.style.display = 'block';
+    errorMsg.scrollIntoView({ behavior: 'smooth' });
+});
             successMsg.scrollIntoView({ behavior: 'smooth' });
 
             document.getElementById('name').disabled = true;
